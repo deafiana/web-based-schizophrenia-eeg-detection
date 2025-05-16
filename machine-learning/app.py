@@ -43,36 +43,41 @@ def reorder_channels(raw, desired_order):
     return raw
 
 def preprocessing(edf_file):
-    # read raw edf
-    raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
+    try: 
+        # read raw edf
+        raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
 
-    # save as .fif
-    fif_file = os.path.splitext(edf_file)[0] + '.fif'
-    raw.save(fif_file, overwrite=True)
+        # save as .fif
+        fif_file = os.path.splitext(edf_file)[0] + '.fif'
+        raw.save(fif_file, overwrite=True)
 
-    # GET CH NAMES
-    ch_names = set(raw.info['ch_names'])
+        # GET CH NAMES
+        ch_names = set(raw.info['ch_names'])
 
-    # CHECK CHANNELS
-    if set(channels_25).issubset(ch_names):
-        raw.drop_channels(['ECG'])
-        raw = reorder_channels(raw, channels_25)
-    elif set(channels_32).issubset(ch_names):
-        raw.drop_channels(['PG1', 'PG2'])
-        raw = reorder_channels(raw, channels_32)
-        raw.filter(l_freq=1.0, h_freq=35.0)
-    else:
-        raise ValueError("Channels do not match supported configurations")
+        # CHECK CHANNELS
+        if set(channels_25).issubset(ch_names):
+            raw.drop_channels(['ECG'])
+            raw = reorder_channels(raw, channels_25)
+        elif set(channels_32).issubset(ch_names):
+            raw.drop_channels(['PG1', 'PG2'])
+            raw = reorder_channels(raw, channels_32)
+            raw.filter(l_freq=1.0, h_freq=35.0)
+        else:
+            raise ValueError("Channels do not match supported configurations")
 
-    # trim 120 minutes from start
-    raw.crop(tmin=120)
+        # trim 120 minutes from start
+        raw.crop(tmin=120)
 
-    # make epochs
-    events = mne.make_fixed_length_events(raw, start=0, duration=5)
-    epochs = mne.Epochs(raw, events, tmin=0, tmax=5, baseline=None, preload=True)
+        # make epochs
+        events = mne.make_fixed_length_events(raw, start=0, duration=5)
+        epochs = mne.Epochs(raw, events, tmin=0, tmax=5, baseline=None, preload=True)
 
-    # make fft
-    fft_result = epochs_to_fft(epochs)
+        # make fft
+        fft_result = epochs_to_fft(epochs)
+
+    finally:
+        if os.path.exists(fif_file):
+            os.remove(fif_file)
 
     return fft_result
 
@@ -157,7 +162,7 @@ def predict_result():
         return jsonify({'error': str(e)}), 500
 
     finally:
-        os.remove(file_path)  # Clean up after processing
+        os.remove(file_path) 
 
     return jsonify(response)
 
