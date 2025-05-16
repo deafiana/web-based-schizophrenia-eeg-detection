@@ -25,28 +25,8 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container className="cover">
-        <div className="title">
-          <h2>
-            Sistem Diagnosa Skizofrenia Melalui Sinyal 
-            <span>
-            Electroencephalography (EEG)
-            </span> 
-            Menggunakan 
-            <span>
-            Deep Learning
-            </span>
-          </h2>
-          <h5>
-            Dengan deep learning, diagnosa skizofrenia lebih mudah dan efisien melalui rekaman sinyal EEG pasien.
-          </h5>
-          <div>
-            <button>Mulai</button>
-          </div>
-        </div>
-        <div className="logo">
-          <img src={icon} width="600" height="600" alt="Logo"/>
-        </div>
+      <Container className="form">
+
       </Container>
     </div>
   )
