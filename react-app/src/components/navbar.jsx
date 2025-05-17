@@ -1,22 +1,27 @@
 import { Navbar, Nav, Container, Button } from "react-bootstrap"
-import icon from ""
+import icon from "../assets/img/logo.png"
 
-function ANavbar(){
+function Navigation(){
     return(
         <div className="app">
-            <Navbar expand="lg" fixed="top" className='custom-navbar'>
+            <Navbar expand="lg" className='custom-navbar'>
                 <Container>
-                <Navbar.Brand href="#">
+                <Navbar.Brand href="/">
                     <img src={icon} width="65" height="65" alt="Logo"/>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarNav" />
                 <Navbar.Collapse id="navbarNav">
                     <Nav className="ms-auto">
-                    <Nav.Link href="#">Beranda</Nav.Link>
-                    <Nav.Link href="#">Latar Belakang</Nav.Link>
-                    <Nav.Link href="#">Fitur</Nav.Link>
-                    <Nav.Link href="#">Tentang Kami</Nav.Link>
-                    <Button className="custom-button">Mulai Diagnosa</Button>
+                    <Nav.Link href="/">Beranda</Nav.Link>
+                    <Nav.Link href="/#background">Latar Belakang</Nav.Link>
+                    <Nav.Link href="/#features">Fitur</Nav.Link>
+                    <Nav.Link href="/#about">Tentang Kami</Nav.Link>
+                    <Button
+                    variant="primary"
+                    className="rounded-pill px-4 py-2"
+                    style={{ fontWeight: 600, backgroundColor: "#3674B5", border: "none"}}
+                    href='/detection'
+                >Mulai Diagnosa</Button>
                     </Nav>
                 </Navbar.Collapse>
                 </Container>
@@ -25,4 +30,4 @@ function ANavbar(){
     )
 }
 
-export default ANavbar
+export default Navigation
