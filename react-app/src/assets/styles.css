@@ -28,3 +28,37 @@
 .cover{
     background-color: red;
 }
+
+.heading-form{
+    font-weight: bold;
+    color: #3674B5;
+}
+
+.label-form{
+    font-weight: bold;
+}
+
+.input-form{
+    border: 2px solid #3674B5;          
+    color: #333;                     
+    padding: 3px; 
+    border-radius: 5px; 
+}
+
+.custom-button{
+    background-color: #3674B5;
+    color: white;
+    border-radius: 50px;
+}
+
+.disclaimer{
+    text-align: center;
+    opacity: 0.5;
+}
+
+.result{
+   border: 2px solid #3674B5;   
+   border-radius: 10px;
+   padding: 10px;
+   font-size: small;
+}

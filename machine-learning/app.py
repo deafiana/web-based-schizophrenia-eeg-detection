@@ -12,11 +12,8 @@ import os
 import mne
 import numpy as np
 from scipy.fft import fft, fftfreq
-from flask import Flask
-from pyngrok import ngrok
-import pandas as pd
-from tqdm import tqdm
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 # load 30 model
 model_path_30 = 'models/model-30.h5'
@@ -27,9 +24,9 @@ model_path_24 = 'models/model-24.h5'
 model_24 = tf.keras.models.load_model(model_path_24)
 
 channels_25 = [
-    "FP1-RRef", "F3-RRef", "C3-RRef", "P3-RRef", "O1-RRef", "F7-RRef", "T3-RRef", "T5-RRef", "T1-RRef", "A1-RRef",
-    "FP2-RRef", "F4-RRef", "C4-RRef", "P4-RRef", "O2-RRef", "F8-RRef", "T4-RRef", "T6-RRef", "T2-RRef", "A2-RRef",
-    "FZ-RRef", "PZ-RRef", "FPZ", "OZ-RRef", "ECG"
+    "FP1-RREF", "F3-RREF", "C3-RREF", "P3-RREF", "O1-RREF", "F7-RREF", "T3-RREF", "T5-RREF", "T1-RREF", "A1-RREF",
+    "FP2-RREF", "F4-RREF", "C4-RREF", "P4-RREF", "O2-RREF", "F8-RREF", "T4-RREF", "T6-RREF", "T2-RREF", "A2-RREF",
+    "FZ-RREF", "PZ-RREF", "FPZ", "OZ-RRef", "ECG"
 ]
 
 channels_32 = [
@@ -41,45 +38,6 @@ def reorder_channels(raw, desired_order):
     existing_channels = [ch for ch in desired_order if ch in raw.ch_names]
     raw.reorder_channels(existing_channels)
     return raw
-
-def preprocessing(edf_file):
-    try: 
-        # read raw edf
-        raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
-
-        # save as .fif
-        fif_file = os.path.splitext(edf_file)[0] + '.fif'
-        raw.save(fif_file, overwrite=True)
-
-        # GET CH NAMES
-        ch_names = set(raw.info['ch_names'])
-
-        # CHECK CHANNELS
-        if set(channels_25).issubset(ch_names):
-            raw.drop_channels(['ECG'])
-            raw = reorder_channels(raw, channels_25)
-        elif set(channels_32).issubset(ch_names):
-            raw.drop_channels(['PG1', 'PG2'])
-            raw = reorder_channels(raw, channels_32)
-            raw.filter(l_freq=1.0, h_freq=35.0)
-        else:
-            raise ValueError("Channels do not match supported configurations")
-
-        # trim 120 minutes from start
-        raw.crop(tmin=120)
-
-        # make epochs
-        events = mne.make_fixed_length_events(raw, start=0, duration=5)
-        epochs = mne.Epochs(raw, events, tmin=0, tmax=5, baseline=None, preload=True)
-
-        # make fft
-        fft_result = epochs_to_fft(epochs)
-
-    finally:
-        if os.path.exists(fif_file):
-            os.remove(fif_file)
-
-    return fft_result
 
 def epochs_to_fft(epochs):
     # got epochs
@@ -104,16 +62,55 @@ def epochs_to_fft(epochs):
 
     return np.array(all_fft) # shape: (n_epochs, n_channels, n_freqs)
 
+def preprocessing(edf_file):
+    try: 
+        # read raw edf
+        raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
+
+        # save as .fif
+        fif_file = os.path.splitext(edf_file)[0] + '.fif'
+        raw.save(fif_file, overwrite=True)
+
+        # GET CH NAMES
+        ch_names = set(ch.upper() for ch in raw.info['ch_names'])
+
+        response = {}
+        # CHECK CHANNELS
+        if set(channels_25).issubset(ch_names):
+            raw.drop_channels(['ECG'])
+            raw = reorder_channels(raw, channels_25)
+        elif set(channels_32).issubset(ch_names):
+            raw.drop_channels(['PG1', 'PG2'])
+            raw = reorder_channels(raw, channels_32)
+            raw.filter(l_freq=1.0, h_freq=35.0)
+        else:
+            raise ValueError("Channels tidak sesuai dengan ketentuan.")
+
+        # trim 120 minutes from start
+        raw.crop(tmin=120)
+
+        # make epochs
+        events = mne.make_fixed_length_events(raw, start=0, duration=5)
+        epochs = mne.Epochs(raw, events, tmin=0, tmax=5, baseline=None, preload=True)
+
+        # make fft
+        fft_result = epochs_to_fft(epochs)
+
+    finally:
+        if os.path.exists(fif_file):
+            os.remove(fif_file)
+
+    return fft_result
+
 '''
     FLASK CONFIGURATION
 '''
+
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/predict', methods=['POST'])
-def predict_result():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No EDF file uploaded'}), 400
-
+def predict():
     file = request.files['file']
     if not file.filename.endswith('.edf'):
         return jsonify({'error': 'File must be an .edf file'}), 400
@@ -134,8 +131,6 @@ def predict_result():
           predictions = model_30.predict(fft_array, verbose=0)
         elif fft_array.shape[1] == 24:
           predictions = model_24.predict(fft_array, verbose=0)
-        else:
-          return jsonify({'error': 'Invalid number of channels'}), 400
 
         count_1 = 0
         count_0 = 0
@@ -154,8 +149,8 @@ def predict_result():
         percent_0 = count_0 / total * 100
 
         response = {
-            "schizophrenia_percentage": round(percent_1, 2),
-            "healthy_percentage": round(percent_0, 2)
+            "schizophrenia_percentage": round(percent_1, 0),
+            "healthy_percentage": round(percent_0, 0)
         }
 
     except Exception as e:
@@ -164,7 +159,7 @@ def predict_result():
     finally:
         os.remove(file_path) 
 
-    return jsonify(response)
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

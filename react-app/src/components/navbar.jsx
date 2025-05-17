@@ -1,7 +1,7 @@
 import { Navbar, Nav, Container, Button } from "react-bootstrap"
-import icon from "img/icon.png"
+import icon from ""
 
-function Navigation(){
+function ANavbar(){
     return(
         <div className="app">
             <Navbar expand="lg" fixed="top" className='custom-navbar'>
@@ -25,4 +25,4 @@ function Navigation(){
     )
 }
 
-export default Navigation
+export default ANavbar
