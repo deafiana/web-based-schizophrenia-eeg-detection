@@ -1,7 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-.app {
-    font-family: 'Poppins', sans-serif;
+body {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.btn:hover {
+    background-color:#244a72 !important;
+}
+
+.btn-sec:hover {
+    background-color: rgb(158, 189, 182) !important;
 }
 
 .custom-navbar {
@@ -25,40 +33,154 @@
     gap: 3rem; 
 }
 
-.cover{
-    background-color: red;
+.navbar-nav .nav-link.active {
+    color: #578FCA !important;
 }
 
-.heading-form{
+.cover {
+    background-color: #ffffff; /* corrected 'ffff' to valid hex */
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    left: 0;
+    right: 0;
+}
+
+.heading-form {
     font-weight: bold;
     color: #3674B5;
 }
 
-.label-form{
+.label-form {
     font-weight: bold;
 }
 
-.input-form{
+.input-form {
     border: 2px solid #3674B5;          
     color: #333;                     
     padding: 3px; 
     border-radius: 5px; 
 }
 
-.custom-button{
+.custom-button {
     background-color: #3674B5;
     color: white;
     border-radius: 50px;
 }
 
-.disclaimer{
+.disclaimer {
     text-align: center;
     opacity: 0.5;
 }
 
-.result{
-   border: 2px solid #3674B5;   
-   border-radius: 10px;
-   padding: 10px;
-   font-size: small;
+.result {
+    border: 2px solid #3674B5;   
+    border-radius: 10px;
+    padding: 10px;
+    font-size: small;
 }
+
+footer {
+    background-color: #3674B5;
+}
+
+.detection {
+    width: 100%;
+    margin: auto;
+    display: flex;
+}
+
+.heading-form {
+    color: #3674B5;
+    font-weight: bold;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .heading-form .italic {
+    font-style: italic;
+    font-weight: 600;
+  }
+  .label-form {
+    font-weight: 700;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: #222;
+  }
+  .question-icon {
+    color: #D32F2F;
+    margin-left: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .input-form {
+    border: 2px solid #3674B5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    font-size: 1rem;
+    background-color: white;
+  }
+  .radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+  }
+  .radio-label .channel-num {
+    font-weight: bold;
+    color: #222;
+  }
+  .radio-label .channel-desc {
+    font-style: italic;
+    color: #888;
+  }
+  .btn-diagnosa {
+    background: #578FCA;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 24px;
+    padding: 12px 32px;
+    font-size: 1.1rem;
+    float: right;
+    border: none;
+    margin-top: 1.5rem;
+  }
+  .btn-diagnosa:hover {
+    background: #265a8a;
+  }
+  .input-date::-webkit-input-placeholder { color: #888; }
+  .input-date::-moz-placeholder { color: #888; }
+  .input-date:-ms-input-placeholder { color: #888; }
+  .input-date::placeholder { color: #888; }
+  .radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+}
+
+.custom-file-input {
+    border: 2px dashed #3674B5;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+  
+  .custom-file-input:hover,
+  .custom-file-input:focus {
+    border-color: #17406a; /* darker blue */
+    transform: scale(1.005); /* slight pop effect */
+    transition: transform 0.2s ease; /* smooth animation */
+  }
