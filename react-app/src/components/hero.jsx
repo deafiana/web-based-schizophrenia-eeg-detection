@@ -18,7 +18,7 @@ function HeroSection() {
           <h1 className="fw-bold" style={{
             fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
           }}>
-            <span style={{color: "#3674B5"}}>Scak Otak:</span> Diagnosa Skizofrenia Melalui Sinyal {' '}
+            <span style={{color: "#3674B5"}}>ScanOtak:</span> Diagnosa Skizofrenia Melalui Sinyal {' '}
             <span className="fst-italic" style={{color: "#3674B5"}}>Electroencephalography</span>{' '}
             <span className="fst-italic" style={{color: "#3674B5"}}>(EEG)</span> Menggunakan{' '}
             <span className="fst-italic" style={{color: "#3674B5"}}>Deep Learning</span>
