@@ -168,9 +168,9 @@ def predict():
         os.remove(file_path) 
 
     return response
-
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+#
+# if __name__ == "__main__":
+    # app.run(debug=True, port=5000)
 
 # from pyngrok import ngrok
 # if __name__ == "__main__":
