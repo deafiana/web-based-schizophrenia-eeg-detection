@@ -1,21 +1,20 @@
-# Use Python base image compatible with TensorFlow
+# Use official Python image
 FROM python:3.10-slim
 
-# Create and set working directory
+# Set working directory
 WORKDIR /app
 
-# Copy requirements and install
+# Copy requirements.txt (create this file with your dependencies)
 COPY requirements.txt .
+
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy rest of your app
+# Copy your app code
 COPY . .
 
-# Let Google Cloud know which port to use
-ENV PORT=8080
-
-# Expose the port Cloud Run listens to
+# Expose the port your app will run on
 EXPOSE 8080
 
-# Run your app (adjust if your entrypoint is different)
-CMD ["python", "app.py"]
+# Use Gunicorn to serve the app (recommended for production)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
