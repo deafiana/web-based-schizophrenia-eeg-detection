@@ -63,47 +63,51 @@ def epochs_to_fft(epochs):
     return np.array(all_fft) # shape: (n_epochs, n_channels, n_freqs)
 
 def preprocessing(edf_file):
-    try: 
-        # read raw edf
-        raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
+    fif_file = os.path.splitext(edf_file)[0] + '.fif'
 
-        # save as .fif
-        fif_file = os.path.splitext(edf_file)[0] + '.fif'
-        raw.save(fif_file, overwrite=True)
+    try:
+        # Convert .edf to .fif if not exists
+        if not os.path.exists(fif_file):
+            raw = mne.io.read_raw_edf(edf_file, preload=True, verbose=False)
+            raw.save(fif_file, overwrite=True)
+        else:
+            print("FIF file already exists.")
+
+        # Load from .fif
+        raw = mne.io.read_raw_fif(fif_file, preload=True, verbose=False)
 
         # GET CH NAMES
         ch_names = set(ch.upper() for ch in raw.info['ch_names'])
 
-        print(ch_names)
+        print("Loaded channels:", ch_names)
 
         # CHECK CHANNELS
         if set(channels_25).issubset(ch_names):
             raw.drop_channels(['ECG'])
-            # raw = reorder_channels(raw, channels_25)
         elif set(channels_32).issubset(ch_names):
             raw.drop_channels(['PG1', 'PG2'])
-            # raw = reorder_channels(raw, channels_32)
             raw.filter(l_freq=1.0, h_freq=35.0)
         else:
             raise ValueError("Channels tidak sesuai dengan ketentuan.")
 
-        # trim 120 minutes from start
+        # Trim to 3 minutes (180s)
         raw.crop(tmin=120)
 
         print("Final channels:", raw.ch_names)
 
-        # make epochs
+        # Create 5-second epochs
         events = mne.make_fixed_length_events(raw, start=0, duration=5)
         epochs = mne.Epochs(raw, events, tmin=0, tmax=5, baseline=None, preload=True)
 
-        # make fft
+        # Convert epochs to FFT
         fft_result = epochs_to_fft(epochs)
 
     finally:
         if os.path.exists(fif_file):
-            os.remove(fif_file)
+            os.remove(fif_file)  # optional cleanup
 
     return fft_result
+
 
 '''
     FLASK CONFIGURATION
