@@ -73,7 +73,7 @@ export default function Detection() {
     console.log("FormData created with file");
 
     try {
-      const response = await fetch("http://web-based-schizophrenia-eeg-detection-production.up.railway.app/predict", {
+      const response = await fetch("https://web-based-schizophrenia-eeg-detection-1057358766262.europe-west1.run.app/predict", {
         method: "POST",
         body: formData,
       });
