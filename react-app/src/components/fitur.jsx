@@ -18,16 +18,18 @@ const Fitur = () => {
             backgroundColor:"#3674B5", 
             color:"white", 
             borderRadius:"5px", 
-            padding:"2px 5px", 
+            padding: "2px 5px 5px 5px",
             display:"inline-block", 
-            lineHeight:"1.2"
+            lineHeight:"1.2",
+            fontStyle: "italic"
           }}>Deep Learning.</span>
         </h2>
         <p style={{
-          fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+          fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
           margin: '0 auto 2rem'
         }}>
-          Deep learning merevolusi analisis medis dengan mengekstrak fitur kompleks dan mengenali pola rumit. Algoritma ini ideal untuk analisis data multidimensional dan sequence, termasuk sinyal EEG.
+          <i>Deep learning</i> memberikan revolusi pada analisis medis dengan mengekstrak fitur kompleks dan mengenali pola rumit. <br/>
+          Algoritma ini ideal untuk analisis data multidimensional dan <i>sequence</i>, termasuk sinyal EEG.
         </p>
         <div className="row row-cols-1 row-cols-md-2 g-4">
             <div className="col">
@@ -76,7 +78,7 @@ const Fitur = () => {
                     color: "#3674B5", 
                     fontWeight: 700,
                     fontSize: 'clamp(1rem, 1.5vw, 1.25rem)'
-                  }}>Memberikan hasil diagnosa awal skizofrenia dalam 5 menit</h5>
+                  }}>Memberikan hasil diagnosa awal skizofrenia dalam 1 menit</h5>
                 </div>
               </div>
             </div>

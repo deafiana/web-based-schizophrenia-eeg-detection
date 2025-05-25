@@ -39,7 +39,7 @@ export default function CustomFileInput({ onFileChange }) {
       {!selectedFile ? (
         <>
           <div style={{ fontSize: "2rem", color: "#888" }}>↑</div>
-          <div style={{ fontSize: "1.3rem", margin: "10px 0" }}>
+          <div style={{ fontSize: "1rem", margin: "10px 0" }}>
             Seret dan Lepas atau <span style={{ color: "#3674B5", fontWeight: 700 }}>Pilih File</span> untuk diunggah.
           </div>
           <div style={{ color: "#888" }}>File rekaman harus dengan format .edf.</div>
@@ -57,7 +57,7 @@ export default function CustomFileInput({ onFileChange }) {
               color: '#3674B5',
               textDecoration: 'underline',
               cursor: 'pointer',
-              padding: '5px 10px'
+              padding: '5px 5px'
             }}
           >
             GANTI FILE

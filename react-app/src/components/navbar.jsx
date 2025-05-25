@@ -7,7 +7,14 @@ function Navigation(){
             <Navbar expand="lg" className='custom-navbar'>
                 <Container>
                 <Navbar.Brand href="/">
-                    <img src={icon} width="65" height="65" alt="Logo"/>
+                    <div className="container">
+                    <div className="row">
+                        <div className="d-flex align-items-center">
+                        <img src={icon} width="65" height="65" alt="Logo" className="me-2" />
+                        <span style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#3674B5'}}>ScanOtak</span>
+                        </div>
+                    </div>
+                    </div>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbarNav" />
                 <Navbar.Collapse id="navbarNav">

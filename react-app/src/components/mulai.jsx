@@ -4,22 +4,22 @@ import { Button } from 'react-bootstrap';
 
 const Mulai = () => {
     return (
-        <section id="mulai" className="py-5" style={{backgroundColor: "#D1F8EF"}}>
+        <section id="mulai" className="py-3" style={{backgroundColor: "#D1F8EF"}}>
             <div className="container">
                 <div className="row align-items-center">
-                    <div className="col-12 col-md-6 text-center mb-4 mb-md-0">
+                    <div className="col-12 col-md-5 text-center mb-4 mb-md-0">
                         <img src={startNow} alt="Start Now" style={{
                             maxWidth: '100%',
                             height: 'auto',
-                            maxHeight: '400px'
+                            maxHeight: '250px'
                         }} />
                     </div>
                     <div className="col-12 col-md-6 text-center text-md-start">
                         <h3 style={{
                             color: "#3674B5", 
                             fontWeight: 700,
-                            fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
-                            marginBottom: '1.5rem'
+                            fontSize: 'clamp(1.25rem, 2.5vw, 1.6rem)',
+                            marginBottom: '0.7rem'
                         }}>
                             Mulai Diagnosa Skizofrenia dengan Sinyal <span className='fst-italic'>
                             Electroencephalography </span> (EEG)

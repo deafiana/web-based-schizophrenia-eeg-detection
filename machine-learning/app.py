@@ -19,6 +19,9 @@ from flask_cors import CORS
 model_path_30 = 'models/model-30.h5'
 model_30 = tf.keras.models.load_model(model_path_30)
 
+# model_path_30 = 'models/model-1d-cnn-NEW.h5'
+# model_30 = tf.keras.models.load_model(model_path_30)
+
 # load 25 model
 model_path_24 = 'models/model-24.h5'
 model_24 = tf.keras.models.load_model(model_path_24)
@@ -26,7 +29,7 @@ model_24 = tf.keras.models.load_model(model_path_24)
 channels_25 = [
     "FP1-RREF", "F3-RREF", "C3-RREF", "P3-RREF", "O1-RREF", "F7-RREF", "T3-RREF", "T5-RREF", "T1-RREF", "A1-RREF",
     "FP2-RREF", "F4-RREF", "C4-RREF", "P4-RREF", "O2-RREF", "F8-RREF", "T4-RREF", "T6-RREF", "T2-RREF", "A2-RREF",
-    "FZ-RREF", "PZ-RREF", "FPZ", "OZ-RRef", "ECG"
+    "FZ-RREF", "PZ-RREF", "FPZ", "OZ-RREF", "ECG"
 ]
 
 channels_32 = [
@@ -74,20 +77,23 @@ def preprocessing(edf_file):
         # GET CH NAMES
         ch_names = set(ch.upper() for ch in raw.info['ch_names'])
 
-        response = {}
+        print(ch_names)
+
         # CHECK CHANNELS
         if set(channels_25).issubset(ch_names):
             raw.drop_channels(['ECG'])
-            raw = reorder_channels(raw, channels_25)
+            # raw = reorder_channels(raw, channels_25)
         elif set(channels_32).issubset(ch_names):
             raw.drop_channels(['PG1', 'PG2'])
-            raw = reorder_channels(raw, channels_32)
+            # raw = reorder_channels(raw, channels_32)
             raw.filter(l_freq=1.0, h_freq=35.0)
         else:
             raise ValueError("Channels tidak sesuai dengan ketentuan.")
 
         # trim 120 minutes from start
         raw.crop(tmin=120)
+
+        print("Final channels:", raw.ch_names)
 
         # make epochs
         events = mne.make_fixed_length_events(raw, start=0, duration=5)
@@ -105,7 +111,6 @@ def preprocessing(edf_file):
 '''
     FLASK CONFIGURATION
 '''
-
 app = Flask(__name__)
 CORS(app)
 
@@ -128,9 +133,11 @@ def predict():
 
         # Model prediction
         if fft_array.shape[1] == 30:
-          predictions = model_30.predict(fft_array, verbose=0)
+            predictions = model_30.predict(fft_array, verbose=0)
         elif fft_array.shape[1] == 24:
-          predictions = model_24.predict(fft_array, verbose=0)
+            predictions = model_24.predict(fft_array, verbose=0)
+        else:
+            raise ValueError(f"Unsupported number of channels: {fft_array.shape}. Expected 30 or 24.")
 
         count_1 = 0
         count_0 = 0
@@ -163,3 +170,11 @@ def predict():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
+# from pyngrok import ngrok
+# if __name__ == "__main__":
+#     # Open a tunnel on port 5000
+#     public_url = ngrok.connect(5000)
+#     print(" * ngrok tunnel:", public_url)
+
+#     app.run(port=5000)

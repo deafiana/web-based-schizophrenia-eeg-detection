@@ -12,6 +12,7 @@ import { Pie } from 'react-chartjs-2';
 import { FaQuestionCircle } from "react-icons/fa";
 import Footer from '../components/footer'
 import CustomFileInput from '../components/CustomFileInput';
+import icon from "../assets/img/logo.png"
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -22,12 +23,14 @@ export default function Detection() {
   const [alertMessage, setAlertMessage] = useState("");
   const [showChannelHelp, setShowChannelHelp] = useState(false);
   const [showDiagnosisHelp, setShowDiagnosisHelp] = useState(false);
+  const [nameValue, setNameValue] = useState('');
+  const [dateValue, setDateValue] = useState('');
   const [result, setResult] = useState({
     schizophrenia_percentage: null,
     healthy_percentage: null
   });
   const [chartData, setChartData] = useState({
-    labels: ['Schizophrenia', 'Normal'],
+    labels: ['Skizofrenia', 'Sehat'],
     datasets: [
       {
         label: 'Prediction',
@@ -70,7 +73,7 @@ export default function Detection() {
     console.log("FormData created with file");
 
     try {
-      const response = await fetch("https://localhost/predict", {
+      const response = await fetch("http://127.0.0.1:5000/predict", {
         method: "POST",
         body: formData,
       });
@@ -107,6 +110,9 @@ export default function Detection() {
         schizophrenia_percentage: result.schizophrenia_percentage,
         healthy_percentage: result.healthy_percentage
       });
+
+      setNameValue(nameValue);
+      setDateValue(formatDate(dateValue));
     } catch (error) {
       console.error("Error during form submission:", error);
       setAlertMessage("Terjadi kesalahan saat mengirim file. Silakan coba lagi.");
@@ -127,24 +133,34 @@ export default function Detection() {
   };
 
   const PieChart = () => {
-    return <Pie data={chartData} options={options} />;
+    return <Pie data={chartData} options={options}  />;
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'Silahkan isi form terlebih dahulu.';
+    const dateObj = new Date(dateStr);
+    return dateObj.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
   return(
     <div>
+    <link rel="icon" type="image/x-icon" href={icon}></link>
+    <title> ScanOtak | Diagnosa Pasien</title>
     <div className="detection mb-5">
       <div className="container mt-4 mt-md-5">
         <div className="row g-4">
-          <div className="col-12 col-md-6">
+          <div className="col-12 col-md-7">
             <Container className="form d-flex flex-column justify-content-between h-100" style={{
-              padding: '1.5rem',
               borderRadius: '10px',
             }}>
               <form onSubmit={handleSubmit} className="d-flex flex-column" style={{flex: 1}}>
                 <div style={{flex: 1}}>
                   <h3 className="heading-form" style={{
-                    fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
-                    marginBottom: '1.5rem'
+                    fontSize: 'clamp(1.25rem, 2.5vw, 1.5rem)',
+                    marginBottom: '0.5rem'
                   }}>
                     Diagnosa Skizofrenia Menggunakan <span className="fst-italic">Deep Learning</span>
                     <FaQuestionCircle 
@@ -158,7 +174,7 @@ export default function Detection() {
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     marginBottom: '0.5rem'
                   }}>
-                    Nama Pasien
+                    Nama Pasien <span style={{color:'red'}}>*</span>
                   </label>
                   <input 
                     className="input-form" 
@@ -166,10 +182,14 @@ export default function Detection() {
                     placeholder="Masukkan nama pasien" 
                     name='name'
                     disabled={loading}
+                    required='true'
+                    id="name"
+                    value={nameValue}
+                    onChange={(e) => setNameValue(e.target.value)} 
                     style={{
-                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-                      padding: '0.75rem',
-                      marginBottom: '1rem'
+                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                      padding: '0.5rem',
+                      marginBottom: '0.5rem'
                     }}
                   />
 
@@ -177,25 +197,28 @@ export default function Detection() {
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     marginBottom: '0.5rem'
                   }}>
-                    Jumlah Channel (lihat pada panduan penggunaan)
+                    Jumlah Channel <span style={{color:'red'}}>*</span>
                     <FaQuestionCircle 
                       className="question-icon" 
                       onClick={() => setShowChannelHelp(true)}
                       style={{ cursor: 'pointer' }}
                     />
                   </label>
+
+                  {/* radio buttton */}
                   <div className="radio-group" style={{
                     display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.75rem',
-                    marginBottom: '1rem'
+                    flexDirection: 'row',
+                    gap: '2rem',
+                    marginBottom: '0.5rem'
                   }}>
                     <label className="radio-label" style={{
                       fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
                     }}>
                       <input 
                         type="radio" 
-                        name='channels' 
+                        name='channels'
+                        required 
                         value="32"
                         disabled={loading}
                         style={{
@@ -238,36 +261,42 @@ export default function Detection() {
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     marginBottom: '0.5rem'
                   }}>
-                    Input File Hasil Rekaman EEG Pasien
+                    Input File Hasil Rekaman EEG Pasien <span style={{color:'red'}}>*</span>
                   </label>
                   <CustomFileInput onFileChange={setFile} disabled={loading} />
 
                   <label className="label-form" style={{
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     marginBottom: '0.5rem',
-                    marginTop: '1rem'
+                    marginTop: '0.5rem'
                   }}>
-                    Waktu diagnosa
+                    Waktu diagnosa <span style={{color:'red'}}>*</span>
                   </label>
                   <input
                     className="input-form input-date"
                     type="date"
+                    id="date"
+                    value={dateValue}
+                    onChange={(e) => setDateValue(e.target.value)}
                     name="diagnosa-date"
                     placeholder="dd/mm/yyyy"
+                    required
                     style={{ 
                       width: '100%',
-                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-                      padding: '0.75rem'
+                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                      padding: '0.5rem'
                     }}
                     disabled={loading}
                   />
                 </div>
+
+                {/* button */}
                 <button 
-                  className="btn-diagnosa mt-4" 
+                  className="btn-diagnosa mt-2" 
                   style={{
                     width: '100%',
                     maxWidth: '200px',
-                    alignSelf: 'center',
+                    alignSelf: 'end',
                     opacity: loading ? 0.7 : 1,
                     cursor: loading ? 'not-allowed' : 'pointer',
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
@@ -282,16 +311,24 @@ export default function Detection() {
             </Container>
           </div>
 
-          <div className="col-12 col-md-6">
+          <div className="col-12 col-md-5">
             <Container className="result d-flex flex-column justify-content-center h-100" style={{
               padding: '1.5rem',
               borderRadius: '10px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
             }}>
-              <h5 className="text-center fw-bold mb-4" style={{ 
+              <h5 className="text-center fw-bold" style={{ 
                 color: '#3674B5',
-                fontSize: 'clamp(1.1rem, 2vw, 1.25rem)'
+                fontSize: 'clamp(0.7rem, 2vw, 1.2rem)'
               }}>Hasil Klasifikasi</h5>
+              <h4 className='text-center fw-bold'style={{ 
+                color: '#3674B5',
+                fontSize: 'clamp(0.9rem, 2vw, 1.3rem)'
+              }}>{nameValue}</h4>
+              <h6 className='text-center fw-bold'style={{ 
+                color: '#3674B5',
+                fontSize: 'clamp(0.6rem, 2vw, 1.1rem)'
+              }}>{formatDate(dateValue)}</h6>
               {loading ? (
                 <div className="d-flex flex-column align-items-center justify-content-center" style={{ 
                   height: 'clamp(300px, 50vw, 400px)'
@@ -317,15 +354,17 @@ export default function Detection() {
                     alignItems: 'center', 
                     justifyContent: 'center' 
                   }}>
-                    <PieChart />
+                    <div className="my-1"style={{width:325, height:325}}>
+                      <PieChart />
+                    </div>
                   </div>
-                  <div className="row mt-4 mb-3 mx-2">
+                  <div className="row mt-1 mb-3 mx-2">
                     <div className="col">
                       <h6 className='text-center fw-bold' style={{ 
-                        color: '#3674B5',
+                        color: 'red',
                         fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
                       }}>
-                        Schizophrenia: {result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'}
+                        Skizofrenia: {result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'}
                       </h6>
                     </div>
                     <div className="col">
@@ -333,14 +372,14 @@ export default function Detection() {
                         color: '#3674B5',
                         fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
                       }}>
-                        Normal: {result.healthy_percentage ? `${result.healthy_percentage}%` : 'N/A'}
+                        Sehat: {result.healthy_percentage ? `${result.healthy_percentage}%` : 'N/A'}
                       </h6>
                     </div>
                   </div>
                 </>
               )}
-              <p className='disclaimer mx-2 mt-3' style={{
-                fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)',
+              <p className='disclaimer mx-2 mt-1' style={{
+                fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)',
                 textAlign: 'center'
               }}>
                 Hasil ini merupakan analisis awal berbasis EEG dan deep learning. 
@@ -390,9 +429,10 @@ export default function Detection() {
       }}>
         <p>Pilih jumlah channel sesuai dengan jenis rekaman EEG yang digunakan:</p>
         <ul>
-          <li><strong>32 Channels:</strong> Digunakan untuk </li>
-          <li><strong>25 Channels:</strong> Digunakan untuk </li>
+          <li><strong>32 Channel</strong> <br/>PG1, PG2, FP1, FP2, F3, F4, F7, F8, FZ, T1, T2, T3, T4, T5, T6, C3, C4, CZ, P3, P4, PZ, O1, O2, A1, A2, 1A, 2A, 3A, 4A, 5A, 6A, 7A </li>
+          <li><strong>25 Channel</strong> <br/>FP1-RRef, F3-RRef, C3-RRef, P3-RRef, O1-RRef, F7-RRef, T3-RRef, T5-RRef, T1-RRef, A1-RRef, FP2-RRef, F4-RRef, C4-RRef, P4-RRef, O2-RRef, F8-RRef, T4-RRef, T6-RRef, T2-RRef, A2-RRef, FZ-RRef, PZ-RRef, FPZ, OZ-RRef, ECG </li>
         </ul>
+        <p><strong>Sampling Rate: </strong>250Hz</p>
         <p>Pastikan memilih jumlah channel yang sesuai dengan file yang akan diunggah.</p>
       </Modal.Body>
       <Modal.Footer>
@@ -425,7 +465,7 @@ export default function Detection() {
           <li>Analisis sinyal EEG menggunakan model deep learning</li>
           <li>Penghitungan probabilitas hasil diagnosa</li>
         </ol>
-        <p>Hasil yang ditampilkan berupa persentase probabilitas untuk setiap kategori (Skizofrenia dan Normal).</p>
+        <p>Hasil yang ditampilkan berupa persentase probabilitas untuk setiap kategori (Skizofrenia dan Sehat).</p>
       </Modal.Body>
       <Modal.Footer>
         <Button 
