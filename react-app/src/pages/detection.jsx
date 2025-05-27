@@ -73,7 +73,7 @@ export default function Detection() {
     const pdfHeight = (imgProperties.height * pdfWidth)/imgProperties.width;
 
     pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('examplepdf.pdf');
+    pdf.save('hasil_diagnosa.pdf');
   };
   
   const handleCloseAlert = () => setShowAlert(false);
@@ -406,105 +406,110 @@ export default function Detection() {
           </div>
 
           <div className="col-12 col-md-5">
-            <Container ref={printRef} className="result d-flex flex-column justify-content-start h-80" style={{
-              padding: '1.5rem',
-              borderRadius: '10px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}>
-              <h5 className="text-center fw-bold" style={{ 
-                color: '#3674B5',
-                fontSize: 'clamp(0.7rem, 2vw, 1.2rem)'
-              }}>Hasil Diagnosa</h5>
-              <h6 className='text-center fw-bold'style={{ 
-                color: '#3674B5',
-                fontSize: 'clamp(0.9rem, 2vw, 1.3rem)'
-              }}>{nameValue ? nameValue : "Silahkan isi form terlebih dahulu."}</h6>
-              <h6 className='text-center fw-bold'style={{ 
-                color: '#3674B5',
-                fontSize: 'clamp(0.6rem, 2vw, 1.1rem)'
-              }}>{dateValue}</h6>
-              {loading ? (
-                <div className="d-flex flex-column align-items-center justify-content-center" style={{ 
-                  height: 'clamp(300px, 50vw, 400px)'
-                }}>
-                  <Spinner animation="border" role="status" variant="primary" style={{ 
-                    width: 'clamp(2rem, 4vw, 3rem)', 
-                    height: 'clamp(2rem, 4vw, 3rem)' 
+            <Container>
+              <div ref={printRef} className="result d-flex flex-column justify-content-start" style={{
+                padding: '1.5rem',
+                borderRadius: '10px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                flex: 1,
+                minHeight: '735px'
+              }}>
+                <h5 className="text-center fw-bold" style={{ 
+                  color: '#3674B5',
+                  fontSize: 'clamp(0.7rem, 2vw, 1.2rem)'
+                }}>Hasil Diagnosa</h5>
+                <h6 className='text-center fw-bold'style={{ 
+                  color: '#3674B5',
+                  fontSize: 'clamp(0.9rem, 2vw, 1.3rem)'
+                }}>{nameValue ? nameValue : "Silahkan isi form terlebih dahulu."}</h6>
+                <h6 className='text-center fw-bold'style={{ 
+                  color: '#3674B5',
+                  fontSize: 'clamp(0.6rem, 2vw, 1.1rem)'
+                }}>{dateValue}</h6>
+                {loading ? (
+                  <div className="d-flex flex-column align-items-center justify-content-center" style={{ 
+                    height: 'clamp(300px, 50vw, 400px)'
                   }}>
-                    <span className="visually-hidden">Loading...</span>
-                  </Spinner>
-                  <p className="mt-3 text-center" style={{ 
-                    color: '#3674B5',
-                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
-                  }}>Memproses data EEG...</p>
-                </div>
-              ) : (
-                <>
-                {/* doughnut chart */}
-                  <div style={{ 
-                    width: '100%', 
-                    height: 'clamp(300px, 50vw, 400px)', 
-                    margin: '0 auto', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center' 
-                  }}>
-                    <div className="my-1"style={{width:300, height:300}}>
+                    <Spinner animation="border" role="status" variant="primary" style={{ 
+                      width: 'clamp(2rem, 4vw, 3rem)', 
+                      height: 'clamp(2rem, 4vw, 3rem)' 
+                    }}>
+                      <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                    <p className="mt-3 text-center" style={{ 
+                      color: '#3674B5',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
+                    }}>Memproses data EEG...</p>
+                  </div>
+                ) : (
+                  <>
+                  {/* doughnut chart */}
+                    <div className="my-4" style={{ 
+                      width: '100%', 
+                      height: 'clamp(300px, 50vw, 350px)', 
+                      margin: '0 auto', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center' 
+                    }}>
                       <DoughnutChart />
                     </div>
-                  </div>
-                  {/* hasil analisa */}
-                  <div className="row mt-1 mb-1 mx-2">
-                    <div className="col">
-                      <p className='text-center' style={{ 
-                        color: '#3674B5',
-                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-                        fontWeight: 600
-                      }}>
-                        Resiko pasien mengidap skizofrenia sebesar
-                        <strong style={{color:'red'}}>
-                          {result.schizophrenia_percentage ? ` ${result.schizophrenia_percentage}%` : ' N/A.'}
-                        </strong>
-                        {/* Skizofrenia: {result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'} */}
-                      </p>
+                    {/* hasil analisa */}
+                    <div className="row mt-1 mb-1 mx-2">
+                      <div className="col">
+                        <p className='text-center' style={{ 
+                          color: '#3674B5',
+                          fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                          fontWeight: 600
+                        }}>
+                          Resiko pasien mengidap skizofrenia sebesar
+                          <strong style={{color:'red'}}>
+                            {result.schizophrenia_percentage ? ` ${result.schizophrenia_percentage}%` : ' N/A.'}
+                          </strong>
+                          {/* Skizofrenia: {result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'} */}
+                        </p>
+                      </div>
+                      {/* <div className="col">
+                        <h6 className='text-center fw-bold' style={{ 
+                          color: '#3674B5',
+                          fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
+                        }}>
+                        </h6>
+                      </div> */}
                     </div>
-                    {/* <div className="col">
-                      <h6 className='text-center fw-bold' style={{ 
-                        color: '#3674B5',
-                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
-                      }}>
-                      </h6>
-                    </div> */}
-                  </div>
-                </>
-              )}
-              <p className='disclaimer mx-2 mt-3' style={{
-                fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)',
-                textAlign: 'center'
-              }}>
-                Hasil ini merupakan analisis awal berbasis EEG menggunakan <i>deep learning</i> dengan arsitektur CNN. 
-                Silakan lakukan evaluasi klinis lebih lanjut dan konsultasikan dengan tim medis sebelum menetapkan 
-                diagnosis akhir.
-              </p>
+                  </>
+                )}
+                <p className='disclaimer mx-2 mt-2' style={{
+                  fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)',
+                  textAlign: 'center'
+                }}>
+                  Hasil ini merupakan analisis awal berbasis EEG menggunakan model <i>deep learning</i>. 
+                  Silakan lakukan evaluasi klinis lebih lanjut dan konsultasikan dengan tim medis sebelum menetapkan 
+                  diagnosis akhir.
+                </p>
+              </div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.1rem' }}>
+                  <button
+                    className="btn-diagnosa"
+                    style={{
+                      width: '100%',
+                      maxWidth: '300px',
+                      opacity: loading || !nameValue || !result.schizophrenia_percentage ? 0.7 : 1,
+                      cursor: loading || !nameValue || !result.schizophrenia_percentage ? 'not-allowed' : 'pointer',
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                      padding: '0.75rem 1.5rem',
+                    }}
+                    type="button"
+                    disabled={loading || !nameValue || !result.schizophrenia_percentage}
+                    onClick={() => {
+                      if (!nameValue || !result.schizophrenia_percentage) return;
+                      handleDownloadPdf();
+                    }}
+                  >
+                    {loading ? 'Memproses...' : 'Unduh Hasil Diagnosa'}
+                  </button>
+                </div>
             </Container>
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.1rem' }}>
-              <button
-                className="btn-diagnosa"
-                style={{
-                  width: '100%',
-                  maxWidth: '300px',
-                  opacity: loading ? 0.7 : 1,
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-                  padding: '0.75rem 1.5rem',
-                }}
-                type="button"
-                disabled={loading}
-                onClick={handleDownloadPdf}
-              >
-                {loading ? 'Memproses...' : 'Unduh Hasil Diagnosa'}
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -583,7 +588,7 @@ export default function Detection() {
           <li>Analisis sinyal EEG menggunakan model deep learning</li>
           <li>Penghitungan probabilitas hasil diagnosa</li>
         </ol>
-        <p>Hasil yang ditampilkan berupa persentase probabilitas untuk setiap kategori Skizofrenia.</p>
+        <p>Hasil yang ditampilkan berupa persentase probabilitas untuk Skizofrenia.</p>
       </Modal.Body>
       <Modal.Footer>
         <Button 

@@ -46,7 +46,7 @@ export default function CustomFileInput({ onFileChange }) {
         </>
       ) : (
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: "1.1rem", margin: "10px 0", wordBreak: 'break-all' }}>
+          <div style={{ fontSize: "1.1rem", margin: "10px 0", wordBreak: 'break-all', minHeight:'60px' }}>
             {selectedFile.name}
           </div>
           <button 
