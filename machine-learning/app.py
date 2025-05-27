@@ -35,7 +35,14 @@ channels_32 = [
 ]
 
 def reorder_channels(raw, desired_order):
-    existing_channels = [ch for ch in desired_order if ch in raw.ch_names]
+    # Buat dictionary mapping uppercase channel name ke nama asli dari raw.ch_names
+    raw_map = {ch.upper().strip(): ch for ch in raw.ch_names}
+    desired_upper = [ch.upper().strip() for ch in desired_order]
+
+    # Ambil channel yang ada di desired_order dan di raw.ch_names (case-insensitive)
+    existing_channels = [raw_map[ch] for ch in desired_upper if ch in raw_map]
+
+    print("Channels to reorder:", existing_channels)
     raw.reorder_channels(existing_channels)
     return raw
 
@@ -82,8 +89,11 @@ def preprocessing(edf_file):
 
         # Check channels
         if set(channels_25).issubset(ch_names):
-            raw.drop_channels(['ECG'])
+            ecg_channel = [ch for ch in raw.info['ch_names'] if ch.strip().upper() == 'ECG']
+            raw.drop_channels(ecg_channel)
             raw = reorder_channels(raw, channels_25)
+            updated_ch_names = set(raw.info['ch_names'])
+            print("Channels after drop and reorder:", updated_ch_names)
         elif set(channels_32).issubset(ch_names):
             raw.drop_channels(['PG1', 'PG2'])
             raw.filter(l_freq=1.0, h_freq=35.0)

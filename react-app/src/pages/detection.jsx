@@ -13,6 +13,8 @@ import { FaQuestionCircle } from "react-icons/fa";
 import Footer from '../components/footer'
 import CustomFileInput from '../components/CustomFileInput';
 import icon from "../assets/img/logo.png"
+import jsPDF from "jspdf";
+import html2canvas from 'html2canvas';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -47,7 +49,33 @@ export default function Detection() {
       },
     ],
   });
+  
+  const printRef = React.useRef(null);
+  const handleDownloadPdf = async () => {
+    const element = printRef.current;
+    if (!element){
+      return;
+    }
 
+    const canvas = await html2canvas(element, {
+      scale: 2
+    });
+    const data = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: "a4"
+    });
+
+    const imgProperties = pdf.getImageProperties(data);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProperties.height * pdfWidth)/imgProperties.width;
+
+    pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('examplepdf.pdf');
+  };
+  
   const handleCloseAlert = () => setShowAlert(false);
   const handleCloseChannelHelp = () => setShowChannelHelp(false);
   const handleCloseDiagnosisHelp = () => setShowDiagnosisHelp(false);
@@ -74,13 +102,21 @@ export default function Detection() {
         body: formData,
       });
       
-      console.log("Response status:", response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
       const result = await response.json();
+
+      console.log("Response status:", response.status);
+
+      // If response is not OK, show the error from the JSON
+      if (!response.ok) {
+        const errorMessage = result.error || "Terjadi kesalahan saat mengirim file. Silakan coba lagi.";
+        setAlertMessage(errorMessage);
+        setShowAlert(true);
+
+        e.target.reset();     // Clear form fields
+        setFile(null);        // Clear file from state
+        return; // Stop execution
+      }
+
       console.log("Received result:", result);
 
       setChartData({
@@ -118,6 +154,9 @@ export default function Detection() {
       console.error("Error during form submission:", error);
       setAlertMessage("Terjadi kesalahan saat mengirim file. Silakan coba lagi.");
       setShowAlert(true);
+
+      e.target.reset();
+      setFile(null);
     } finally {
       setLoading(false);
     }
@@ -138,7 +177,7 @@ export default function Detection() {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return 'Silahkan isi form terlebih dahulu.';
+    if (!dateStr) return 'Invalid Date';
     const dateObj = new Date(dateStr);
     return dateObj.toLocaleDateString('id-ID', {
       day: 'numeric',
@@ -351,7 +390,7 @@ export default function Detection() {
                   style={{
                     width: '100%',
                     maxWidth: '200px',
-                    alignSelf: 'end',
+                    alignSelf: 'center',
                     opacity: loading ? 0.7 : 1,
                     cursor: loading ? 'not-allowed' : 'pointer',
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
@@ -367,7 +406,7 @@ export default function Detection() {
           </div>
 
           <div className="col-12 col-md-5">
-            <Container className="result d-flex flex-column justify-content-start h-100" style={{
+            <Container ref={printRef} className="result d-flex flex-column justify-content-start h-80" style={{
               padding: '1.5rem',
               borderRadius: '10px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -376,10 +415,10 @@ export default function Detection() {
                 color: '#3674B5',
                 fontSize: 'clamp(0.7rem, 2vw, 1.2rem)'
               }}>Hasil Diagnosa</h5>
-              <h4 className='text-center fw-bold'style={{ 
+              <h6 className='text-center fw-bold'style={{ 
                 color: '#3674B5',
                 fontSize: 'clamp(0.9rem, 2vw, 1.3rem)'
-              }}>{nameValue}</h4>
+              }}>{nameValue ? nameValue : "Silahkan isi form terlebih dahulu."}</h6>
               <h6 className='text-center fw-bold'style={{ 
                 color: '#3674B5',
                 fontSize: 'clamp(0.6rem, 2vw, 1.1rem)'
@@ -410,7 +449,7 @@ export default function Detection() {
                     alignItems: 'center', 
                     justifyContent: 'center' 
                   }}>
-                    <div className="my-1"style={{width:325, height:325}}>
+                    <div className="my-1"style={{width:300, height:300}}>
                       <DoughnutChart />
                     </div>
                   </div>
@@ -439,22 +478,6 @@ export default function Detection() {
                   </div>
                 </>
               )}
-                <button 
-                  className="btn-diagnosa mt-1" 
-                  style={{
-                    width: '100%',
-                    maxWidth: '300px',
-                    alignSelf: 'center',
-                    opacity: loading ? 0.7 : 1,
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
-                    padding: '0.75rem 1.5rem'
-                  }} 
-                  type="submit"
-                  disabled={loading}
-                >
-                  {loading ? 'Memproses...' : 'Unduh Hasil Diagnosa'}
-                </button>
               <p className='disclaimer mx-2 mt-3' style={{
                 fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)',
                 textAlign: 'center'
@@ -464,6 +487,24 @@ export default function Detection() {
                 diagnosis akhir.
               </p>
             </Container>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '0.1rem' }}>
+              <button
+                className="btn-diagnosa"
+                style={{
+                  width: '100%',
+                  maxWidth: '300px',
+                  opacity: loading ? 0.7 : 1,
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                  padding: '0.75rem 1.5rem',
+                }}
+                type="button"
+                disabled={loading}
+                onClick={handleDownloadPdf}
+              >
+                {loading ? 'Memproses...' : 'Unduh Hasil Diagnosa'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -28,8 +28,10 @@ const Fitur = () => {
           fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
           margin: '0 auto 2rem'
         }}>
-          <i>Deep learning</i> memberikan revolusi pada analisis medis dengan mengekstrak fitur kompleks dan mengenali pola rumit. <br/>
-          Algoritma ini ideal untuk analisis data multidimensional dan <i>sequence</i>, termasuk sinyal EEG.
+          <i>Deep learning</i> merevolusi analisis medis dengan mengenali pola kompleks dalam data seperti sinyal EEG. 
+          Sistem ini dirancang untuk membantu tenaga medis mendiagnosis skizofrenia lebih efisien melalui ekstraksi fitur dengan
+          <em>Fast Fourier Transform</em> (FFT) 
+          dan klasifikasi menggunakan <em>Convolutional Neural Network </em>(CNN), yang mencapai akurasi hingga 100%.
         </p>
         <div className="row row-cols-1 row-cols-md-2 g-4">
             <div className="col">
