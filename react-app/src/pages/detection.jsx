@@ -8,7 +8,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import { FaQuestionCircle } from "react-icons/fa";
 import Footer from '../components/footer'
 import CustomFileInput from '../components/CustomFileInput';
@@ -111,8 +111,13 @@ export default function Detection() {
         healthy_percentage: result.healthy_percentage
       });
 
+      // set name and value
+      const nameValue = e.target.elements.nama.value;
       setNameValue(nameValue);
+
+      const dateValue = e.target.elements.date.value;
       setDateValue(formatDate(dateValue));
+
     } catch (error) {
       console.error("Error during form submission:", error);
       setAlertMessage("Terjadi kesalahan saat mengirim file. Silakan coba lagi.");
@@ -132,8 +137,8 @@ export default function Detection() {
     },
   };
 
-  const PieChart = () => {
-    return <Pie data={chartData} options={options}  />;
+  const DoughnutChart = () => {
+    return <Doughnut data={chartData} options={options}  />;
   };
 
   const formatDate = (dateStr) => {
@@ -145,6 +150,7 @@ export default function Detection() {
       year: 'numeric',
     });
   };
+
   return(
     <div>
     <link rel="icon" type="image/x-icon" href={icon}></link>
@@ -174,24 +180,89 @@ export default function Detection() {
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     marginBottom: '0.5rem'
                   }}>
-                    Nama Pasien <span style={{color:'red'}}>*</span>
+                    Nama Pasien<span style={{color:'red'}}>*</span>
                   </label>
                   <input 
                     className="input-form" 
                     type="text" 
-                    placeholder="Masukkan nama pasien" 
-                    name='name'
+                    placeholder="Masukkan Nama Pasien..." 
+                    name='nama'
                     disabled={loading}
-                    required='true'
-                    id="name"
-                    value={nameValue}
-                    onChange={(e) => setNameValue(e.target.value)} 
+                    required
+                    id="nama"
                     style={{
                       fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
                       padding: '0.5rem',
                       marginBottom: '0.5rem'
                     }}
                   />
+
+                  <label className="label-form" style={{
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Usia <span style={{color:'red'}}>*</span>
+                  </label>
+                  <input 
+                    className="input-form" 
+                    type="number" 
+                    placeholder="Masukkan Usia Pasien..." 
+                    name='usia'
+                    disabled={loading}
+                    required
+                    id="usia"
+                    style={{
+                      fontSize: 'clamp(0.8rem, 1.5vw, 0.9rem)',
+                      padding: '0.5rem',
+                      marginBottom: '0.5rem'
+                    }}
+                  />
+
+                  <label className="label-form" style={{
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Jenis Kelamin <span style={{color:'red'}}>*</span>
+                  </label>
+                  {/* radio buttton */}
+                  <div className="radio-group" style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: '2rem',
+                    marginBottom: '0.5rem'
+                  }}>
+                    <label className="radio-label" style={{
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
+                    }}>
+                      <input 
+                        type="radio" 
+                        name='channels'
+                        required 
+                        value="32"
+                        disabled={loading}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          marginRight: '0.5rem'
+                        }}
+                      />Laki-laki
+                    </label>
+                    <label className="radio-label" style={{
+                      fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
+                    }}>
+                      <input 
+                        type="radio" 
+                        name='channels' 
+                        value="25"
+                        disabled={loading}
+                        style={{
+                          width: '18px',
+                          height: '18px',
+                          marginRight: '0.5rem'
+                        }}
+                      />Perempuan
+                    </label>
+                  </div>
 
                   <label className="label-form" style={{
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
@@ -227,12 +298,12 @@ export default function Detection() {
                           marginRight: '0.5rem'
                         }}
                       />
-                      <span>32 Channels</span>
-                      <span className="channel-desc" style={{
+                      <span>32 Channels (dengan PG1 & PG2)</span>
+                      {/* <span className="channel-desc" style={{
                         fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)',
                         color: '#666',
                         marginLeft: '0.5rem'
-                      }}>(dengan PG1 & PG2)</span>
+                      }}>(dengan PG1 & PG2)</span> */}
                     </label>
                     <label className="radio-label" style={{
                       fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
@@ -248,12 +319,12 @@ export default function Detection() {
                           marginRight: '0.5rem'
                         }}
                       />
-                      <span>25 Channels</span>
-                      <span className="channel-desc" style={{
+                      <span>25 Channels (dengan ECG)</span>
+                      {/* <span className="channel-desc" style={{
                         fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)',
                         color: '#666',
                         marginLeft: '0.5rem'
-                      }}>(dengan ECG)</span>
+                      }}>(dengan ECG)</span> */}
                     </label>
                   </div>
 
@@ -276,8 +347,6 @@ export default function Detection() {
                     className="input-form input-date"
                     type="date"
                     id="date"
-                    value={dateValue}
-                    onChange={(e) => setDateValue(e.target.value)}
                     name="diagnosa-date"
                     placeholder="dd/mm/yyyy"
                     required
@@ -312,7 +381,7 @@ export default function Detection() {
           </div>
 
           <div className="col-12 col-md-5">
-            <Container className="result d-flex flex-column justify-content-center h-100" style={{
+            <Container className="result d-flex flex-column justify-content-start h-100" style={{
               padding: '1.5rem',
               borderRadius: '10px',
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
@@ -320,7 +389,7 @@ export default function Detection() {
               <h5 className="text-center fw-bold" style={{ 
                 color: '#3674B5',
                 fontSize: 'clamp(0.7rem, 2vw, 1.2rem)'
-              }}>Hasil Klasifikasi</h5>
+              }}>Hasil Diagnosa</h5>
               <h4 className='text-center fw-bold'style={{ 
                 color: '#3674B5',
                 fontSize: 'clamp(0.9rem, 2vw, 1.3rem)'
@@ -355,7 +424,7 @@ export default function Detection() {
                     justifyContent: 'center' 
                   }}>
                     <div className="my-1"style={{width:325, height:325}}>
-                      <PieChart />
+                      <DoughnutChart />
                     </div>
                   </div>
                   <div className="row mt-1 mb-3 mx-2">
@@ -378,7 +447,23 @@ export default function Detection() {
                   </div>
                 </>
               )}
-              <p className='disclaimer mx-2 mt-1' style={{
+                <button 
+                  className="btn-diagnosa mt-2" 
+                  style={{
+                    width: '100%',
+                    maxWidth: '300px',
+                    alignSelf: 'center',
+                    opacity: loading ? 0.7 : 1,
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                    padding: '0.75rem 1.5rem'
+                  }} 
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? 'Memproses...' : 'Unduh Hasil Diagnosa'}
+                </button>
+              <p className='disclaimer mx-2 mt-3' style={{
                 fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)',
                 textAlign: 'center'
               }}>
