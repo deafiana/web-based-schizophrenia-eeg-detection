@@ -48,10 +48,6 @@ export default function Detection() {
     ],
   });
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
   const handleCloseAlert = () => setShowAlert(false);
   const handleCloseChannelHelp = () => setShowChannelHelp(false);
   const handleCloseDiagnosisHelp = () => setShowDiagnosisHelp(false);
@@ -231,14 +227,14 @@ export default function Detection() {
                     gap: '2rem',
                     marginBottom: '0.5rem'
                   }}>
-                    <label className="radio-label" style={{
+                    <label className="radio-label-g" style={{
                       fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
                     }}>
                       <input 
                         type="radio" 
-                        name='channels'
+                        name='gender'
                         required 
-                        value="32"
+                        value="Laki-laki"
                         disabled={loading}
                         style={{
                           width: '18px',
@@ -247,13 +243,13 @@ export default function Detection() {
                         }}
                       />Laki-laki
                     </label>
-                    <label className="radio-label" style={{
+                    <label className="radio-label-g" style={{
                       fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
                     }}>
                       <input 
                         type="radio" 
-                        name='channels' 
-                        value="25"
+                        name='gender' 
+                        value="Perempuan"
                         disabled={loading}
                         style={{
                           width: '18px',
@@ -299,11 +295,6 @@ export default function Detection() {
                         }}
                       />
                       <span>32 Channels (dengan PG1 & PG2)</span>
-                      {/* <span className="channel-desc" style={{
-                        fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)',
-                        color: '#666',
-                        marginLeft: '0.5rem'
-                      }}>(dengan PG1 & PG2)</span> */}
                     </label>
                     <label className="radio-label" style={{
                       fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
@@ -320,11 +311,6 @@ export default function Detection() {
                         }}
                       />
                       <span>25 Channels (dengan ECG)</span>
-                      {/* <span className="channel-desc" style={{
-                        fontSize: 'clamp(0.8rem, 1.2vw, 0.9rem)',
-                        color: '#666',
-                        marginLeft: '0.5rem'
-                      }}>(dengan ECG)</span> */}
                     </label>
                   </div>
 
@@ -397,7 +383,7 @@ export default function Detection() {
               <h6 className='text-center fw-bold'style={{ 
                 color: '#3674B5',
                 fontSize: 'clamp(0.6rem, 2vw, 1.1rem)'
-              }}>{formatDate(dateValue)}</h6>
+              }}>{dateValue}</h6>
               {loading ? (
                 <div className="d-flex flex-column align-items-center justify-content-center" style={{ 
                   height: 'clamp(300px, 50vw, 400px)'
@@ -415,6 +401,7 @@ export default function Detection() {
                 </div>
               ) : (
                 <>
+                {/* doughnut chart */}
                   <div style={{ 
                     width: '100%', 
                     height: 'clamp(300px, 50vw, 400px)', 
@@ -427,28 +414,33 @@ export default function Detection() {
                       <DoughnutChart />
                     </div>
                   </div>
-                  <div className="row mt-1 mb-3 mx-2">
+                  {/* hasil analisa */}
+                  <div className="row mt-1 mb-1 mx-2">
                     <div className="col">
-                      <h6 className='text-center fw-bold' style={{ 
-                        color: 'red',
-                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
+                      <p className='text-center' style={{ 
+                        color: '#3674B5',
+                        fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
+                        fontWeight: 600
                       }}>
-                        Skizofrenia: {result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'}
-                      </h6>
+                        Resiko pasien mengidap skizofrenia sebesar
+                        <strong style={{color:'red'}}>
+                          {result.schizophrenia_percentage ? ` ${result.schizophrenia_percentage}%` : ' N/A.'}
+                        </strong>
+                        {/* Skizofrenia: {result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'} */}
+                      </p>
                     </div>
-                    <div className="col">
+                    {/* <div className="col">
                       <h6 className='text-center fw-bold' style={{ 
                         color: '#3674B5',
                         fontSize: 'clamp(0.9rem, 1.5vw, 1rem)'
                       }}>
-                        Sehat: {result.healthy_percentage ? `${result.healthy_percentage}%` : 'N/A'}
                       </h6>
-                    </div>
+                    </div> */}
                   </div>
                 </>
               )}
                 <button 
-                  className="btn-diagnosa mt-2" 
+                  className="btn-diagnosa mt-1" 
                   style={{
                     width: '100%',
                     maxWidth: '300px',
@@ -467,7 +459,7 @@ export default function Detection() {
                 fontSize: 'clamp(0.7rem, 1.2vw, 0.8rem)',
                 textAlign: 'center'
               }}>
-                Hasil ini merupakan analisis awal berbasis EEG dan deep learning. 
+                Hasil ini merupakan analisis awal berbasis EEG menggunakan <i>deep learning</i> dengan arsitektur CNN. 
                 Silakan lakukan evaluasi klinis lebih lanjut dan konsultasikan dengan tim medis sebelum menetapkan 
                 diagnosis akhir.
               </p>
@@ -550,7 +542,7 @@ export default function Detection() {
           <li>Analisis sinyal EEG menggunakan model deep learning</li>
           <li>Penghitungan probabilitas hasil diagnosa</li>
         </ol>
-        <p>Hasil yang ditampilkan berupa persentase probabilitas untuk setiap kategori (Skizofrenia dan Sehat).</p>
+        <p>Hasil yang ditampilkan berupa persentase probabilitas untuk setiap kategori Skizofrenia.</p>
       </Modal.Body>
       <Modal.Footer>
         <Button 

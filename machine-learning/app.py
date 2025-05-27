@@ -26,11 +26,11 @@ model_24 = tf.keras.models.load_model(model_path_24)
 channels_25 = [
     "FP1-RREF", "F3-RREF", "C3-RREF", "P3-RREF", "O1-RREF", "F7-RREF", "T3-RREF", "T5-RREF", "T1-RREF", "A1-RREF",
     "FP2-RREF", "F4-RREF", "C4-RREF", "P4-RREF", "O2-RREF", "F8-RREF", "T4-RREF", "T6-RREF", "T2-RREF", "A2-RREF",
-    "FZ-RREF", "PZ-RREF", "FPZ", "OZ-RREF", "ECG"
+    "FZ-RREF", "PZ-RREF", "FPZ", "OZ-RREF"
 ]
 
 channels_32 = [
-    "PG1", "PG2", "FP1", "FP2", "F3", "F4", "F7", "F8", "FZ", "T1", "T2", "T3", "T4", "T5", "T6", "C3", "C4", "CZ",
+    "FP1", "FP2", "F3", "F4", "F7", "F8", "FZ", "T1", "T2", "T3", "T4", "T5", "T6", "C3", "C4", "CZ",
     "P3", "P4", "PZ", "O1", "O2", "A1", "A2", "1A", "2A", "3A", "4A", "5A", "6A", "7A"
 ]
 
@@ -64,7 +64,8 @@ def epochs_to_fft(epochs):
 
 def preprocessing(edf_file):
     fif_file = os.path.splitext(edf_file)[0] + '.fif'
-
+    fft_result = None  # initialize
+    
     try:
         # Convert .edf to .fif if not exists
         if not os.path.exists(fif_file):
@@ -73,45 +74,42 @@ def preprocessing(edf_file):
         else:
             print("FIF file already exists.")
 
-        # Load from .fif
         raw = mne.io.read_raw_fif(fif_file, preload=True, verbose=False)
 
-        # GET CH NAMES
+        # Uppercase all channel names
         ch_names = set(ch.upper() for ch in raw.info['ch_names'])
-
         print("Loaded channels:", ch_names)
 
-        # CHECK CHANNELS
+        # Check channels
         if set(channels_25).issubset(ch_names):
             raw.drop_channels(['ECG'])
+            raw = reorder_channels(raw, channels_25)
         elif set(channels_32).issubset(ch_names):
             raw.drop_channels(['PG1', 'PG2'])
             raw.filter(l_freq=1.0, h_freq=35.0)
+            raw = reorder_channels(raw, channels_32)
         else:
             raise ValueError("Channels tidak sesuai dengan ketentuan.")
 
-        # Trim to 3 minutes (180s)
+        # Crop and epoch
         raw.crop(tmin=120)
-
-        print("Final channels:", raw.ch_names)
-
-        # Create 5-second epochs
         events = mne.make_fixed_length_events(raw, start=0, duration=5)
         epochs = mne.Epochs(raw, events, tmin=0, tmax=5, baseline=None, preload=True)
 
-        # Convert epochs to FFT
+        # Apply FFT conversion
         fft_result = epochs_to_fft(epochs)
 
     finally:
+        # Always delete temp .fif file
         if os.path.exists(fif_file):
-            os.remove(fif_file)  # optional cleanup
+            os.remove(fif_file)
 
     return fft_result
-
 
 '''
     FLASK CONFIGURATION
 '''
+
 app = Flask(__name__)
 CORS(app)
 
@@ -138,7 +136,7 @@ def predict():
         elif fft_array.shape[1] == 24:
             predictions = model_24.predict(fft_array, verbose=0)
         else:
-            raise ValueError(f"Unsupported number of channels: {fft_array.shape}. Expected 30 or 24.")
+            raise ValueError(f"Channels tidak sesuai dengan ketentuan.")
 
         count_1 = 0
         count_0 = 0
@@ -168,7 +166,7 @@ def predict():
         os.remove(file_path) 
 
     return response
-#
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
 
