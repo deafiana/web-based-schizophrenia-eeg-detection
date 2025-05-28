@@ -236,7 +236,7 @@ export default function Detection() {
                     fontSize: 'clamp(0.9rem, 1.5vw, 1rem)',
                     marginBottom: '0.5rem'
                   }}>
-                    Usia <span style={{color:'red'}}>*</span>
+                    Usia Pasien<span style={{color:'red'}}>*</span>
                   </label>
                   <input 
                     className="input-form" 
