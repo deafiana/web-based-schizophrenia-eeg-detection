@@ -27,6 +27,8 @@ export default function Detection() {
   const [showDiagnosisHelp, setShowDiagnosisHelp] = useState(false);
   const [nameValue, setNameValue] = useState('');
   const [dateValue, setDateValue] = useState('');
+  const [ageValue, setAgeValue] = useState('');
+  const [genderValue, setGenderValue] = useState('');
   const [result, setResult] = useState({
     schizophrenia_percentage: null,
     healthy_percentage: null
@@ -53,28 +55,38 @@ export default function Detection() {
   const printRef = React.useRef(null);
   const handleDownloadPdf = async () => {
     const element = printRef.current;
-    if (!element){
+    if (!element) {
+      console.warn("PDF element not found");
       return;
     }
-
-    const canvas = await html2canvas(element, {
-      scale: 2
-    });
-    const data = canvas.toDataURL('image/png');
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "px",
-      format: "a4"
-    });
-
-    const imgProperties = pdf.getImageProperties(data);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProperties.height * pdfWidth)/imgProperties.width;
-
-    pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('hasil_diagnosa.pdf');
-  };
+  
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+      });
+  
+      const imgData = canvas.toDataURL("image/png");
+  
+      // Get dimensions
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+  
+      // Create PDF with dynamic page size
+      const pdf = new jsPDF({
+        orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [imgWidth, imgHeight],
+      });
+  
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+      pdf.save(`${nameValue}_${ageValue}_HASIL DIAGNOSA.pdf`);
+  
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("Gagal membuat PDF. Pastikan semua elemen telah dimuat.");
+    }
+  };  
   
   const handleCloseAlert = () => setShowAlert(false);
   const handleCloseChannelHelp = () => setShowChannelHelp(false);
@@ -149,6 +161,12 @@ export default function Detection() {
 
       const dateValue = e.target.elements.date.value;
       setDateValue(formatDate(dateValue));
+
+      const ageValue = e.target.elements.usia.value;
+      setAgeValue(ageValue);
+
+      const genderValue = e.target.elements.gender.value;
+      setGenderValue(genderValue);
 
     } catch (error) {
       console.error("Error during form submission:", error);
@@ -509,6 +527,81 @@ export default function Detection() {
                     {loading ? 'Memproses...' : 'Unduh Hasil Diagnosa'}
                   </button>
                 </div>
+            </Container>
+          </div>
+          <div>
+            <Container style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              opacity: 0,
+              pointerEvents: 'none',
+              zIndex: -1,
+            }}>
+              <div
+                ref={printRef}
+                className="result"
+                style={{
+                  padding: '2rem',
+                  borderRadius: '10px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  backgroundColor: 'white',
+                  fontSize: 'clamp(0.9rem, 1.5vw, 1.1rem)',
+                }}
+              >
+                <h2 className="mt-2 mb-4 text-center" style={{ color: '#3674B5' }}>
+                  Hasil Diagnosa Skizofrenia Menggunakan Deep Learning (CNN)
+                </h2>
+
+                <div className="row g-4">
+                  {/* Chart Column */}
+                  <div className="col-12 col-md-5 d-flex align-items-center justify-content-center">
+                    {/* doughnut chart */}
+                    <div className="my-4" style={{ 
+                      width: '100%', 
+                      height: 'clamp(300px, 50vw, 350px)', 
+                      margin: '0 auto', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center' 
+                    }}>
+                      <DoughnutChart />
+                    </div>
+                  </div>
+
+                  {/* Info Column */}
+                  <div className="col-12 col-md-7 d-flex flex-column justify-content-center">
+                    <div className="d-flex flex-column justify-content-center" style={{ flex: 1 }}>
+                      {/* Patient Info Rows */}
+                      {[
+                        ['Nama', nameValue || 'N/A'],
+                        ['Usia', ageValue ? `${ageValue} tahun` : 'N/A'],
+                        ['Jenis Kelamin', genderValue || 'N/A'],
+                        ['Tanggal Diagnosa', dateValue || 'N/A'],
+                        ['Probabilitas Skizofrenia', result.schizophrenia_percentage ? `${result.schizophrenia_percentage}%` : 'N/A'],
+                      ].map(([label, value], idx) => (
+                        <div key={idx} className="d-flex mb-3">
+                          <div className="fw-bold" style={{ width: '40%', color: '#3674B5' }}>
+                            {label}
+                          </div>
+                          <div className="fw-bold" style={{ width: '5%', color: '#3674B5', textAlign: 'right' }}>
+                            :
+                          </div>
+                          <div className="fw-bold" style={{ width: '55%', color: '#3674B5' }}>
+                            &emsp;{value}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Disclaimer stays bottom-aligned */}
+                    <p className="mt-4" style={{ color: '#808080', textAlign: 'justify' }}>
+                      Hasil ini merupakan analisis awal berbasis EEG dan <i>deep learning</i>. Silakan lakukan evaluasi klinis
+                      lebih lanjut dan konsultasikan dengan tim medis sebelum menetapkan diagnosis akhir.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </Container>
           </div>
         </div>
