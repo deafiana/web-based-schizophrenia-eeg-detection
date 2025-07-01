@@ -94,91 +94,78 @@ export default function Detection() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted");
-
-    if (!file) {
-      setAlertMessage("Mohon masukkan file rekaman EEG.");
+  
+    // Ambil nilai dari field form
+    const form = e.target;
+    const nama = form.elements.nama.value.trim();
+    const usia = form.elements.usia.value.trim();
+    const gender = form.elements.gender.value;
+    const channels = form.elements.channels.value;
+    const date = form.elements["diagnosa-date"].value;
+  
+    // Validasi manual semua field
+    if (!nama || !usia || !gender || !channels || !date || !file) {
+      setAlertMessage("Mohon lengkapi semua isian form termasuk file rekaman EEG.");
       setShowAlert(true);
       return;
     }
-    console.log("File selected:", file.name);
-
+  
+    // lanjut jika valid
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
-    console.log("FormData created with file");
-
+  
     try {
       const response = await fetch("https://web-based-schizophrenia-eeg-detection-1057358766262.europe-west1.run.app/predict", {
         method: "POST",
         body: formData,
       });
-      
+  
       const result = await response.json();
-
-      console.log("Response status:", response.status);
-
-      // If response is not OK, show the error from the JSON
+  
       if (!response.ok) {
         const errorMessage = result.error || "Terjadi kesalahan saat mengirim file. Silakan coba lagi.";
         setAlertMessage(errorMessage);
         setShowAlert(true);
-
-        e.target.reset();     // Clear form fields
-        setFile(null);        // Clear file from state
-        return; // Stop execution
+        form.reset(); 
+        setFile(null);
+        return;
       }
-
-      console.log("Received result:", result);
-
+  
+      // Set hasil dan simpan data form
       setChartData({
         labels: ['Schizophrenia', 'Normal'],
         datasets: [
           {
             label: 'Prediction',
             data: [result.schizophrenia_percentage, result.healthy_percentage],
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.6)',
-              'rgba(54, 162, 235, 0.6)',
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-            ],
+            backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)'],
+            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
             borderWidth: 1,
           },
         ],
       });
-
+  
       setResult({
         schizophrenia_percentage: result.schizophrenia_percentage,
         healthy_percentage: result.healthy_percentage
       });
-
-      // set name and value
-      const nameValue = e.target.elements.nama.value;
-      setNameValue(nameValue);
-
-      const dateValue = e.target.elements.date.value;
-      setDateValue(formatDate(dateValue));
-
-      const ageValue = e.target.elements.usia.value;
-      setAgeValue(ageValue);
-
-      const genderValue = e.target.elements.gender.value;
-      setGenderValue(genderValue);
-
+  
+      setNameValue(nama);
+      setDateValue(formatDate(date));
+      setAgeValue(usia);
+      setGenderValue(gender);
+  
     } catch (error) {
       console.error("Error during form submission:", error);
       setAlertMessage("Terjadi kesalahan saat mengirim file. Silakan coba lagi.");
       setShowAlert(true);
-
-      e.target.reset();
+      form.reset();
       setFile(null);
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const options = {
     responsive: true,
