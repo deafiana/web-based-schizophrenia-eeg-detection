@@ -19,6 +19,8 @@ from flask_cors import CORS
 model_path_30 = 'models/model-30.h5'
 model_30 = tf.keras.models.load_model(model_path_30)
 
+model_30.summary()
+
 # load 25 model
 model_path_24 = 'models/model-24.h5'
 model_24 = tf.keras.models.load_model(model_path_24)
@@ -180,11 +182,11 @@ def predict():
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
 
-
-# from pyngrok import ngrok
-# if __name__ == "__main__":
-#     # Open a tunnel on port 5000
-#     public_url = ngrok.connect(5000)
-#     print(" * ngrok tunnel:", public_url)
-
-#     app.run(port=5000)
+# #
+# # from pyngrok import ngrok
+# # if __name__ == "__main__":
+# #     # Open a tunnel on port 5000
+# #     public_url = ngrok.connect(5000)
+# #     print(" * ngrok tunnel:", public_url)
+# #
+# #     app.run(port=5000)
